@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @FeignClient(value = "cloud-provider-payment-service")
 @RequestMapping("/payment")
-public interface PaymentFeignService {
+public interface PaymentFeignClient {
     @PostMapping("/create")
     CommonResult create(@RequestBody Payment payment);
 

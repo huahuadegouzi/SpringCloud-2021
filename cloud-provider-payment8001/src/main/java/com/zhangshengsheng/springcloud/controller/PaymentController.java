@@ -57,18 +57,14 @@ public class PaymentController {
     @GetMapping("/discovery")
     public DiscoveryClient discovery(){
         List<String> services = discoveryClient.getServices();
-        for (String element : services) {
+        services.forEach(element -> {
             log.info("******* element ******: {}", element);
             List<ServiceInstance> instances = discoveryClient.getInstances(element);
-            for (ServiceInstance instance : instances) {
-                log.info("***嵌套***" + instance.getInstanceId() + "\t" + instance.getHost() + "\t" + instance.getUri() + "\t" + instance.getPort());
-            }
-        }
+            instances.forEach(instance -> log.info("***嵌套***" + instance.getInstanceId() + "\t" + instance.getHost() + "\t" + instance.getUri() + "\t" + instance.getPort()));
+        });
 
         List<ServiceInstance> instances = discoveryClient.getInstances("CLOUD-PROVIDER-PAYMENT-SERVICE");
-        for (ServiceInstance instance : instances) {
-            log.info(instance.getInstanceId() + "\t" + instance.getHost() + "\t" + instance.getUri() + "\t" + instance.getPort());
-        }
+        instances.forEach(instance -> log.info(instance.getInstanceId() + "\t" + instance.getHost() + "\t" + instance.getUri() + "\t" + instance.getPort()));
 
         return discoveryClient;
     }
