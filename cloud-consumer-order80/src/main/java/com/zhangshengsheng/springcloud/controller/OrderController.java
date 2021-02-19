@@ -19,11 +19,11 @@ import java.util.List;
  * @create: 2021-02-08 14:11
  **/
 @RestController
-@RequestMapping("/consumer")
+@RequestMapping("/consumer/payment")
 @Slf4j
 public class OrderController {
-//    public static final String PAYMENT_URL = "http://localhost:8001";
-    public static final String PAYMENT_URL = "http://CLOUD-PROVIDER-PAYMENT-SERVICE";
+    public static final String PAYMENT_URL = "http://localhost:8001";
+//    public static final String PAYMENT_URL = "http://CLOUD-PROVIDER-PAYMENT-SERVICE";
     @Resource
     private RestTemplate restTemplate;
     @Resource
@@ -31,24 +31,24 @@ public class OrderController {
     @Resource
     private MyLoadBalancer myLoadBalancer;
 
-    @PostMapping("/payment/create")
+    @PostMapping("/create")
     public CommonResult<Payment> create(@RequestBody Payment payment){
         return restTemplate.postForObject(PAYMENT_URL + "/payment/create", payment, CommonResult.class);
     }
 
-    @GetMapping("/payment/get/{id}")
+    @GetMapping("/get/{id}")
     public CommonResult<Payment> getPayment(@PathVariable("id") Long id){
         return restTemplate.getForObject(PAYMENT_URL + "/payment/get/" + id, CommonResult.class);
     }
 
-    @PostMapping("/payment/create2")
+    @PostMapping("/create2")
     public CommonResult<Payment> create2(@RequestBody Payment payment){
         ResponseEntity<CommonResult> commonResultResponseEntity = restTemplate.postForEntity(PAYMENT_URL + "/payment/create", payment, CommonResult.class);
         log.info(commonResultResponseEntity.getStatusCode() + "\t" + commonResultResponseEntity.getHeaders());
         return commonResultResponseEntity.getBody();
     }
 
-    @GetMapping("/payment/lb")
+    @GetMapping("/lb")
     public String getPaymentLB(){
         List<ServiceInstance> instances = discoveryClient.getInstances("CLOUD-PROVIDER-PAYMENT-SERVICE");
         if(null == instances || instances.size() <= 0){
@@ -58,5 +58,11 @@ public class OrderController {
         String str = instance.getServiceId() + "\t" + instance.getInstanceId() + "\t"
                 + instance.getHost() + "\t" + instance.getUri() + "\t" + instance.getPort();
         return str;
+    }
+
+    @GetMapping("/zipkin")
+    public String paymentZipkin(){
+        String result = restTemplate.getForObject(PAYMENT_URL+"/payment/zipkin",String.class);
+        return result;
     }
 }
